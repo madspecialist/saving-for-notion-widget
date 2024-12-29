@@ -156,8 +156,12 @@ const DynamicWidget = () => {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
     setCurrentColorScheme(0); // Reset to default colors when toggling dark/light mode
+    
+    // Notify the parent document about the dark mode change
+    window.postMessage(newDarkMode ? 'darkMode' : 'lightMode', '*');
   };
 
   const cycleColorScheme = () => {
@@ -208,7 +212,7 @@ const DynamicWidget = () => {
   );
 
   return (
-    <Card className={`w-96 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-lg transition-colors duration-200`}>
+    <Card className={`w-96 ${isDarkMode ? 'bg-[#191919]' : 'bg-white'} shadow-lg transition-colors duration-200 border-0`}>
       <CardContent className="p-6">
         {/* Header with controls */}
         <div className="flex justify-between items-center mb-4">
