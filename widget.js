@@ -25,15 +25,20 @@ const DynamicWidget = () => {
   const [motivationalQuote, setMotivationalQuote] = useState('');
   const [currentColorScheme, setCurrentColorScheme] = useState(0);
 
-  // Color schemes for text (excluding backgrounds)
+  // Base color schemes for light/dark mode
+  const baseColorSchemes = {
+    light: { primary: 'text-gray-900', secondary: 'text-gray-700', accent: 'text-gray-600' },
+    dark: { primary: 'text-gray-100', secondary: 'text-gray-300', accent: 'text-gray-200' }
+  };
+
+  // Additional color schemes for the color picker
   const colorSchemes = [
     { primary: 'text-gray-900', secondary: 'text-gray-700', accent: 'text-gray-600' },
-    { primary: 'text-white', secondary: 'text-gray-200', accent: 'text-gray-100' },
-    { primary: 'text-blue-500', secondary: 'text-blue-400', accent: 'text-blue-200' },
-    { primary: 'text-purple-500', secondary: 'text-purple-400', accent: 'text-purple-200' },
-    { primary: 'text-green-500', secondary: 'text-green-400', accent: 'text-green-200' },
-    { primary: 'text-rose-500', secondary: 'text-rose-400', accent: 'text-rose-200' },
-    { primary: 'text-amber-500', secondary: 'text-amber-400', accent: 'text-amber-200' }
+    { primary: 'text-blue-500', secondary: 'text-blue-400', accent: 'text-blue-300' },
+    { primary: 'text-purple-500', secondary: 'text-purple-400', accent: 'text-purple-300' },
+    { primary: 'text-green-500', secondary: 'text-green-400', accent: 'text-green-300' },
+    { primary: 'text-rose-500', secondary: 'text-rose-400', accent: 'text-rose-300' },
+    { primary: 'text-amber-500', secondary: 'text-amber-400', accent: 'text-amber-300' }
   ];
 
   // Welcome messages based on time of day
@@ -88,9 +93,7 @@ const DynamicWidget = () => {
     // Check system dark mode preference and set initial state
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDarkMode(mediaQuery.matches);
-    
-    // Set initial color scheme based on dark mode
-    setCurrentColorScheme(mediaQuery.matches ? 1 : 0);
+    setCurrentColorScheme(0); // Always start with default color scheme
 
     const updateDateTime = () => {
       const now = new Date();
@@ -132,8 +135,6 @@ const DynamicWidget = () => {
     // Listen for system dark mode changes
     const darkModeListener = (e) => {
       setIsDarkMode(e.matches);
-      // Automatically set appropriate color scheme when system preference changes
-      setCurrentColorScheme(e.matches ? 1 : 0);
     };
     
     mediaQuery.addEventListener('change', darkModeListener);
@@ -155,17 +156,25 @@ const DynamicWidget = () => {
   };
 
   const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    // Automatically set appropriate color scheme when toggling dark mode
-    setCurrentColorScheme(newDarkMode ? 1 : 0);
+    setIsDarkMode(prev => !prev);
+    setCurrentColorScheme(0); // Reset to default colors when toggling dark/light mode
   };
 
   const cycleColorScheme = () => {
     setCurrentColorScheme((prev) => (prev + 1) % colorSchemes.length);
   };
 
-  const currentColors = colorSchemes[currentColorScheme];
+  // Get the current text colors based on dark mode and color scheme
+  const getTextColors = () => {
+    if (currentColorScheme === 0) {
+      // Use base color scheme when no custom colors are selected
+      return isDarkMode ? baseColorSchemes.dark : baseColorSchemes.light;
+    }
+    // Use custom color scheme when selected
+    return colorSchemes[currentColorScheme];
+  };
+
+  const currentColors = getTextColors();
 
   // Icons from Lucide
   const SunIcon = () => (
@@ -199,21 +208,21 @@ const DynamicWidget = () => {
   );
 
   return (
-    <Card className={`w-96 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'} shadow-lg transition-colors duration-200`}>
+    <Card className={`w-96 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-lg transition-colors duration-200`}>
       <CardContent className="p-6">
         {/* Header with controls */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-2">
             <button 
               onClick={toggleDarkMode}
-              className={`p-2 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} rounded-full transition-colors`}
+              className={`p-2 ${isDarkMode ? 'hover:bg-gray-700 text-gray-200' : 'hover:bg-gray-100 text-gray-800'} rounded-full transition-colors`}
               title="Toggle dark mode"
             >
               {isDarkMode ? <MoonIcon /> : <SunIcon />}
             </button>
             <button 
               onClick={cycleColorScheme}
-              className={`p-2 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} rounded-full transition-colors`}
+              className={`p-2 ${isDarkMode ? 'hover:bg-gray-700 text-gray-200' : 'hover:bg-gray-100 text-gray-800'} rounded-full transition-colors`}
               title="Change color scheme"
             >
               <PaletteIcon />
@@ -225,31 +234,31 @@ const DynamicWidget = () => {
         </div>
 
         {/* Welcome Message */}
-        <div className={`mb-4 font-medium ${isDarkMode ? currentColors.accent : currentColors.primary}`}>
+        <div className={`mb-4 font-medium ${currentColors.accent}`}>
           {welcomeMessage}
         </div>
 
         {/* Date Information */}
         <div className="mb-4">
           <h2 className={`text-2xl font-bold ${currentColors.primary}`}>{currentMonth}</h2>
-          <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{currentDate}</p>
+          <p className={`text-lg ${currentColors.secondary}`}>{currentDate}</p>
         </div>
 
         {/* Sales Event Information */}
         <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'} mb-4`}>
-          <h3 className={`text-lg font-semibold ${isDarkMode ? currentColors.accent : currentColors.primary}`}>
+          <h3 className={`text-lg font-semibold ${currentColors.primary}`}>
             Current Sales Event:
           </h3>
-          <p className={`mt-2 ${isDarkMode ? currentColors.secondary : currentColors.primary}`}>
+          <p className={`mt-2 ${currentColors.secondary}`}>
             {salesEvent && salesEvent[0]}
           </p>
-          <p className={`mt-1 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`mt-1 text-sm ${currentColors.accent}`}>
             {salesEvent && salesEvent[1]}
           </p>
         </div>
 
         {/* Motivational Quote */}
-        <div className={`text-sm italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        <div className={`text-sm italic ${currentColors.accent}`}>
           "{motivationalQuote}"
         </div>
       </CardContent>
