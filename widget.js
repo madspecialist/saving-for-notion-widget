@@ -85,9 +85,12 @@ const DynamicWidget = () => {
   };
 
   useEffect(() => {
-    // Check system dark mode preference
+    // Check system dark mode preference and set initial state
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDarkMode(mediaQuery.matches);
+    
+    // Set initial color scheme based on dark mode
+    setCurrentColorScheme(mediaQuery.matches ? 1 : 0);
 
     const updateDateTime = () => {
       const now = new Date();
@@ -127,7 +130,12 @@ const DynamicWidget = () => {
     const interval = setInterval(updateDateTime, 60000);
 
     // Listen for system dark mode changes
-    const darkModeListener = (e) => setIsDarkMode(e.matches);
+    const darkModeListener = (e) => {
+      setIsDarkMode(e.matches);
+      // Automatically set appropriate color scheme when system preference changes
+      setCurrentColorScheme(e.matches ? 1 : 0);
+    };
+    
     mediaQuery.addEventListener('change', darkModeListener);
 
     return () => {
@@ -146,7 +154,13 @@ const DynamicWidget = () => {
     }
   };
 
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    // Automatically set appropriate color scheme when toggling dark mode
+    setCurrentColorScheme(newDarkMode ? 1 : 0);
+  };
+
   const cycleColorScheme = () => {
     setCurrentColorScheme((prev) => (prev + 1) % colorSchemes.length);
   };
@@ -222,7 +236,7 @@ const DynamicWidget = () => {
         </div>
 
         {/* Sales Event Information */}
-        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-blue-50'} mb-4`}>
+        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'} mb-4`}>
           <h3 className={`text-lg font-semibold ${isDarkMode ? currentColors.accent : currentColors.primary}`}>
             Current Sales Event:
           </h3>
