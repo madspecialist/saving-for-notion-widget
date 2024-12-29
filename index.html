@@ -11,9 +11,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+      /* Add CSS to handle dark mode transition */
+      body {
+        transition: background-color 0.2s ease;
+      }
+      
+      /* Add dark mode detection and styling */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #191919;
+        }
+      }
+    </style>
   </head>
-  <body class="min-h-screen flex items-center justify-center bg-gray-50">
+  <body>
     <div id="root"></div>
     <script type="text/babel" src="widget.js"></script>
+    <script>
+      // Add JavaScript to handle dark mode changes from the widget
+      window.addEventListener('message', function(event) {
+        if (event.data === 'darkMode') {
+          document.body.style.backgroundColor = '#191919';
+        } else if (event.data === 'lightMode') {
+          document.body.style.backgroundColor = '#f9fafb'; // Tailwind gray-50
+        }
+      });
+    </script>
   </body>
 </html>
