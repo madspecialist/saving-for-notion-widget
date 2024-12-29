@@ -27,13 +27,13 @@ const DynamicWidget = () => {
 
   // Color schemes for text (excluding backgrounds)
   const colorSchemes = [
+    { primary: 'text-gray-900', secondary: 'text-gray-700', accent: 'text-gray-600' },
+    { primary: 'text-white', secondary: 'text-gray-200', accent: 'text-gray-100' },
     { primary: 'text-blue-500', secondary: 'text-blue-400', accent: 'text-blue-200' },
     { primary: 'text-purple-500', secondary: 'text-purple-400', accent: 'text-purple-200' },
     { primary: 'text-green-500', secondary: 'text-green-400', accent: 'text-green-200' },
     { primary: 'text-rose-500', secondary: 'text-rose-400', accent: 'text-rose-200' },
-    { primary: 'text-amber-500', secondary: 'text-amber-400', accent: 'text-amber-200' },
-    { primary: 'text-white', secondary: 'text-gray-200', accent: 'text-gray-100' },
-    { primary: 'text-gray-900', secondary: 'text-gray-700', accent: 'text-gray-600' }
+    { primary: 'text-amber-500', secondary: 'text-amber-400', accent: 'text-amber-200' }
   ];
 
   // Welcome messages based on time of day
